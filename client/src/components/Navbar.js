@@ -35,7 +35,7 @@ function Navbar() {
         ) : (
           <>
             <span className="nav-user">Welcome, {name} ({role})</span>
-            <button className="nav-logout" onClick={handleLogout}>Logout</button>
+            <button className="nav-link" onClick={handleLogout}>Logout</button>
           </>
         )}
       </div>

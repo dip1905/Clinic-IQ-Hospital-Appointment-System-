@@ -8,6 +8,7 @@ import {
 
 } from '../services/api';
 import axios from 'axios';
+import '../css/Dashboard.css'; // Assuming you have some styles for the dashboard
 
 
 function Dashboard() {
@@ -79,9 +80,6 @@ function Dashboard() {
 
   return (
     <div className="container">
-      <h2>Welcome, {name}</h2>
-      <p>Your role: {role}</p>
-
       {role === 'patient' && (
         <form onSubmit={handleBook} className="mb-4">
           <h3>Book Appointment</h3>
@@ -101,21 +99,21 @@ function Dashboard() {
       <div className="mt-4">
         <h3>{role === 'doctor' ? 'My Patients' : 'My Appointments'}</h3>
         {appointments.map((appt) => (
-          <div key={appt._id} className="border p-2 my-2">
+          <div key={appt._id} className="appointment-card">
             <p><strong>{role === 'doctor' ? 'Patient' : 'Doctor'}:</strong> {role === 'doctor' ? appt.patient : appt.doctor}</p>
             <p><strong>Date:</strong> {new Date(appt.date).toLocaleString()}</p>
             <p><strong>Status:</strong> {appt.status}</p>
 
             {appt.status === 'booked' && (
-              <>
-                <button className="btn btn-danger btn-sm me-2" onClick={() => handleCancel(appt._id)}>Cancel</button>
-
+              <div className="appointment-actions">
+                <button className="btn btn-danger btn-sm" onClick={() => handleCancel(appt._id)}>Cancel</button>
                 {role === 'doctor' && (
                   <button className="btn btn-success btn-sm" onClick={() => handleComplete(appt._id)}>Mark Completed</button>
                 )}
-              </>
+              </div>
             )}
           </div>
+
         ))}
       </div>
     </div>

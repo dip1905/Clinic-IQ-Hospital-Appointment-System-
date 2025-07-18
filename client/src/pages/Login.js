@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { login } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import '../css/Login.css'; // Assuming you have a CSS file for styling
 
 function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -28,12 +29,14 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="login-form text-center">
-      <h2>Login</h2>
-      <input name="username" placeholder="Username" onChange={handleChange} required />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
-      <button type="submit" className="btn btn-primary mt-3">Login</button>
-    </form>
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2>Login</h2>
+        <input name="username" placeholder="Username" onChange={handleChange} required />
+        <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+        <button type="submit" className="btn btn-primary mt-3">Login</button>
+      </form>
+    </div>
   );
 }
 
