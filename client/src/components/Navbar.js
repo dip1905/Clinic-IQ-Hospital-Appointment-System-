@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/api';
+import '../css/Navbar.css';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -14,36 +15,29 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-3">
-      <div className="container-fluid">
-        <Link className="navbar-brand fw-bold" to="/">
-          <img src="/logo1.png" alt="ClinicIQ Logo" height="30" className="me-2" />
-          ClinicIQ
+    <nav className="navbar">
+      <div className="nav-left">
+        <Link to="/" >
+          <div className="nav-logo">
+            <img src="/logo1.png" alt="ClinicIQ" className='img' />
+          </div>
+          <h1>ClinicIQ</h1>
         </Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+      </div>
 
-        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul className="navbar-nav">
-            {!name ? (
-              <>
-                <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-                <li className="nav-item"><Link className="nav-link" to="/register">Register</Link></li>
-                <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
-              </>
-            ) : (
-              <>
-                <li className="nav-item">
-                  <span className="nav-link text-white">Welcome, {name} ({role})</span>
-                </li>
-                <li className="nav-item">
-                  <button className="btn btn-light btn-sm ms-2" onClick={handleLogout}>Logout</button>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
+      <div className="nav-right">
+        {!name ? (
+          <>
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/register" className="nav-link">Register</Link>
+            <Link to="/login" className="nav-link">Login</Link>
+          </>
+        ) : (
+          <>
+            <span className="nav-user">Welcome, {name} ({role})</span>
+            <button className="nav-logout" onClick={handleLogout}>Logout</button>
+          </>
+        )}
       </div>
     </nav>
   );

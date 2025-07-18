@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <Navbar />
-      <div className="container mt-4">
+      <div style={{ marginTop: '150px' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
