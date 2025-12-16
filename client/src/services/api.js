@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://cliniciq-hospital-appointment-system.onrender.com',
+  baseURL: 'https://cliniciq-hospital-appointment-system.onrender.com/api',
   withCredentials: true
 });
 
