@@ -1,6 +1,5 @@
 const Appointment = require('../models/Appointment');
 
-// CREATE an appointment
 const createAppointment = async (req, res) => {
   try {
     const newAppointment = new Appointment(req.body);
@@ -11,7 +10,6 @@ const createAppointment = async (req, res) => {
   }
 };
 
-// GET all appointments for a doctor
 const getAppointmentsForDoctor = async (req, res) => {
   try {
     const { doctor } = req.params;
@@ -22,7 +20,6 @@ const getAppointmentsForDoctor = async (req, res) => {
   }
 };
 
-// GET all appointments for a patient
 const getAppointmentsForUser = async (req, res) => {
   try {
     const { username } = req.params;
@@ -33,7 +30,6 @@ const getAppointmentsForUser = async (req, res) => {
   }
 };
 
-// CANCEL an appointment
 const cancelAppointment = async (req, res) => {
   try {
     const { id } = req.params;

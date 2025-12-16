@@ -23,6 +23,15 @@ function Register() {
     } catch (err) {
       alert('Registration failed');
     }
+    setForm({
+      name: '',
+      email: '',
+      mobile: '',
+      username: '',
+      password: '',
+      role: ''
+    });   
+    
   };
 
   return (
@@ -39,6 +48,15 @@ function Register() {
           <option value="patient">Patient</option>
           <option value="doctor">Doctor</option>
         </select>
+        {form.role === 'doctor' && (
+          <>
+            <input name="specialization" placeholder="Specialization" onChange={handleChange} />
+            <input name="qualification" placeholder="Qualification" onChange={handleChange} />
+            <input name="experience" type="number" placeholder="Experience" onChange={handleChange} />
+            <input name="consultationFee" type="number" placeholder="Consultation Fee" onChange={handleChange} />
+          </>
+        )}
+
         <button type="submit" className="btn btn-success mt-3">Register</button>
       </form>
     </div>

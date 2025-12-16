@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { login } from '../services/api';
 import { useNavigate } from 'react-router-dom';
-import '../css/Login.css'; // Assuming you have a CSS file for styling
+import '../css/Login.css';
 
 function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
@@ -13,16 +13,20 @@ function Login() {
     e.preventDefault();
     try {
       const res = await login(form);
-
-      // ✅ Store everything
+      const { user, token } = res.data;
       localStorage.setItem('username', res.data.user.username);
       localStorage.setItem('name', res.data.user.name);
       localStorage.setItem('role', res.data.user.role);
       if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('token', token);
       }
+      
 
-      navigate('/dashboard');
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       alert("Login failed");
     }

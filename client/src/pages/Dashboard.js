@@ -8,7 +8,7 @@ import {
 
 } from '../services/api';
 import axios from 'axios';
-import '../css/Dashboard.css'; // Assuming you have some styles for the dashboard
+import '../css/Dashboard.css';
 
 
 function Dashboard() {
@@ -25,7 +25,7 @@ function Dashboard() {
     if (role === 'doctor') fetchDoctorAppointments(username);
     else if (role === 'patient') {
       fetchPatientAppointments(username);
-      fetchDoctorsList(); // ✅ this calls API.get('/users?role=doctor')
+      fetchDoctorsList();
     }
   }, [username, role]);
 
