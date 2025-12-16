@@ -6,7 +6,7 @@ function ManageAppointments() {
 
   const fetchAppointments = () => {
     axios
-      .get('http://localhost:5000/api/admin/appointments', { withCredentials: true })
+      .get('https://cliniciq-hospital-appointment-system.onrender.com/api/admin/appointments', { withCredentials: true })
       .then(res => setAppointments(res.data))
       .catch(() => alert('Access denied'));
   };
@@ -15,7 +15,7 @@ function ManageAppointments() {
 
   const handleDelete = async (id) => {
     await axios.delete(
-      `http://localhost:5000/api/admin/appointments/${id}`,
+      `https://cliniciq-hospital-appointment-system.onrender.com/api/admin/appointments/${id}`,
       { withCredentials: true }
     );
     fetchAppointments();
