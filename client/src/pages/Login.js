@@ -13,13 +13,15 @@ function Login() {
     e.preventDefault();
     try {
       const res = await login(form);
-      const { user, token } = res.data;
+      const user = res.data.user;
+     // const { user, token } = res.data;
       localStorage.setItem('username', res.data.user.username);
       localStorage.setItem('name', res.data.user.name);
       localStorage.setItem('role', res.data.user.role);
-      if (res.data.token) {
-        localStorage.setItem('token', token);
-      }
+      
+      // if (res.data.token) {
+      //   localStorage.setItem('token', token);
+      // }
       
 
       if (user.role === 'admin') {
