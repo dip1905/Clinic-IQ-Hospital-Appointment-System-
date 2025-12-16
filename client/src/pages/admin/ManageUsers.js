@@ -7,7 +7,7 @@ function ManageUsers() {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(
-        'http://localhost:5000/api/admin/users',
+        'https://cliniciq-hospital-appointment-system.onrender.com/api/admin/users',
         { withCredentials: true }
       );
       setUsers(res.data);
@@ -22,7 +22,7 @@ function ManageUsers() {
 
   const approveDoctor = async (id) => {
     await axios.patch(
-      `http://localhost:5000/api/admin/approve/${id}`,
+      `https://cliniciq-hospital-appointment-system.onrender.com/api/admin/approve/${id}`,
       {},
       { withCredentials: true }
     );
@@ -31,7 +31,7 @@ function ManageUsers() {
 
   const blockUser = async (id) => {
     await axios.patch(
-      `http://localhost:5000/api/admin/block/${id}`,
+      `https://cliniciq-hospital-appointment-system.onrender.com/api/admin/block/${id}`,
       {},
       { withCredentials: true }
     );
@@ -40,7 +40,7 @@ function ManageUsers() {
 
   const unblockUser = async (id) => {
     await axios.patch(
-      `http://localhost:5000/api/admin/unblock/${id}`,
+      `https://cliniciq-hospital-appointment-system.onrender.com/api/admin/unblock/${id}`,
       {},
       { withCredentials: true }
     );
@@ -51,7 +51,7 @@ function ManageUsers() {
     if (!window.confirm('Delete this user?')) return;
 
     await axios.delete(
-      `http://localhost:5000/api/admin/users/${id}`,
+      `https://cliniciq-hospital-appointment-system.onrender.com/api/admin/users/${id}`,
       { withCredentials: true }
     );
     fetchUsers();
