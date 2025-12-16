@@ -70,20 +70,21 @@ exports.login = async (req, res) => {
       { expiresIn: '1d' }
     );
 
-    res
-      .cookie('token', token, {
-        httpOnly: true,
-        sameSite: 'strict',
-        secure: false
-      })
-      .json({
-        token,
-        user: {
-          username: user.username,
-          role: user.role,
-          name: user.name
-        }
-      });
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,       
+  sameSite: "none",   
+  maxAge: 24 * 60 * 60 * 1000
+});
+
+res.status(200).json({
+  message: "Login successful",
+  user: {
+    id: user._id,
+    name: user.name,
+    role: user.role
+  }
+});
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -92,6 +93,10 @@ exports.login = async (req, res) => {
 
 
 exports.logout = (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie("token", {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none"
+});
   res.json({ message: 'Logged out' });
 };
