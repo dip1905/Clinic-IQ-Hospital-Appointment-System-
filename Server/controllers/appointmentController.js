@@ -1,19 +1,33 @@
 const Appointment = require('../models/Appointment');
 
-const createAppointment = async (req, res) => {
+const Appointment = require('../models/Appointment');
+
+exports.createAppointment = async (req, res) => {
   try {
-    const newAppointment = new Appointment(req.body);
-    const savedAppointment = await newAppointment.save();
-    res.status(201).json(savedAppointment);
+    const { doctorId, date, time } = req.body;
+    const appointment = await Appointment.create({
+      patient: req.user.id,
+      doctor: doctorId,     
+      date,
+      time,
+      status: "pending"
+    });
+
+    res.status(201).json({
+      message: "Appointment booked successfully",
+      appointment
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+
 const getAppointmentsForDoctor = async (req, res) => {
   try {
     const { doctor } = req.params;
-    const appointments = await Appointment.find({ doctor });
+    const appointments = await Appointment.find({ doctor:req.user.id }).populate("patient", "name email")
+    .sort({ createdAt: -1 });;
     res.json(appointments);
   } catch (err) {
     res.status(500).json({ error: err.message });
