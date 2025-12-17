@@ -21,14 +21,24 @@ function Dashboard() {
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
 
+  // useEffect(() => {
+  //   if (role === 'doctor') fetchDoctorAppointments(username);
+  //   else if (role === 'patient') {
+  //     fetchPatientAppointments(username);
+  //     fetchDoctorsList();
+  //   }
+  // }, [username, role]);
+  
   useEffect(() => {
-    if (role === 'doctor') fetchDoctorAppointments(username);
-    else if (role === 'patient') {
-      fetchPatientAppointments(username);
-      fetchDoctorsList();
-    }
-  }, [username, role]);
+  if (!username || !role) return;
 
+  if (role === 'doctor') {
+    fetchDoctorAppointments(username);
+  } else if (role === 'patient') {
+    fetchPatientAppointments(username);
+    fetchDoctorsList();
+  }
+}, [username, role]);
 
   const fetchDoctorAppointments = async (uname) => {
     const res = await getAppointmentsForDoctor(uname);
@@ -36,6 +46,7 @@ function Dashboard() {
   };
 
   const fetchPatientAppointments = async (uname) => {
+    if (!uname) return;
     const res = await getAppointmentsForPatient(uname);
     setAppointments(res.data);
   };
