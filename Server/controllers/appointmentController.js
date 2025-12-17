@@ -12,7 +12,7 @@ const Appointment = require('../models/Appointment');
 
 const createAppointment = async (req, res) => {
   try {
-    const { patient, doctor, date, time } = req.body;
+    const { patient, doctor, date } = req.body;
 
     if (!patient || !doctor || !date ) {
       return res.status(400).json({
