@@ -19,16 +19,16 @@ function Login() {
         alert("Login data missing");
         return;
       }
-      localStorage.setItem('username', res.data.user.username);
-      localStorage.setItem('name', res.data.user.name);
-      localStorage.setItem('role', res.data.user.role);
+      localStorage.setItem('username', res.data.userData.username);
+      localStorage.setItem('name', res.data.userData.name);
+      localStorage.setItem('role', res.data.userData.role);
       
       // if (res.data.token) {
       //   localStorage.setItem('token', token);
       // }
       
 
-      if (user.role === 'admin') {
+      if (userData.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
