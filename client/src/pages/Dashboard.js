@@ -47,7 +47,7 @@ function Dashboard() {
 
   const handleBook = async (e) => {
     e.preventDefault();
-    await bookAppointment({ patient: username, doctor, date });
+    await bookAppointment({ doctorId: selectedDoctorId, date, time });
     alert('Appointment booked');
     fetchPatientAppointments(username);
     setDoctor('');
