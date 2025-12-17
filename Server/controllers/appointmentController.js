@@ -14,7 +14,7 @@ const createAppointment = async (req, res) => {
   try {
     const { patient, doctor, date, time } = req.body;
 
-    if (!patient || !doctor || !date || !time) {
+    if (!patient || !doctor || !date ) {
       return res.status(400).json({
         message: 'patient, doctor and date are required'
       });
