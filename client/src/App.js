@@ -10,7 +10,7 @@ import ManageUsers from './pages/admin/ManageUsers';
 import ManageAppointments from './pages/admin/ManageAppointments';
 
 function App() {
-  const isLoggedIn = !!localStorage.getItem('token');
+  
   useEffect(() => {
   const token = localStorage.getItem('token');
 
@@ -18,6 +18,7 @@ function App() {
     localStorage.clear();
   }
 }, []);
+  const isLoggedIn = !!localStorage.getItem('token');
 
   return (
     <Router>
