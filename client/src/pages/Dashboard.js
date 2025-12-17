@@ -7,7 +7,6 @@ import {
   getDoctors,
   markCompleted
 } from '../services/api';
-import axios from 'axios';
 import '../css/Dashboard.css';
 
 
