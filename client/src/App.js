@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Register from './pages/Register';
@@ -11,13 +11,15 @@ import ManageAppointments from './pages/admin/ManageAppointments';
 
 function App() {
   
-  useEffect(() => {
-  const token = localStorage.getItem('token');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  if (!token) {
-    localStorage.clear();
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    setIsLoggedIn(true);
   }
 }, []);
+
 
   return (
     <Router>
@@ -27,8 +29,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={ <Dashboard /> } />
-
+          <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ManageUsers />} />
           <Route path="/admin/appointments" element={<ManageAppointments />} />
