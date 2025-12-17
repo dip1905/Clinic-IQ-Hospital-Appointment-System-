@@ -13,7 +13,6 @@ const doctorRoutes = require('./routes/doctorRouter');
 
 dotenv.config();
 connectDB();
-
 const app = express();
 // app.use(cors({
 //   origin: 'https://clinic-iq-hospital-appointment-system.onrender.com',
