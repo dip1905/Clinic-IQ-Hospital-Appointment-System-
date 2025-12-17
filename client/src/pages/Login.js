@@ -13,6 +13,7 @@ function Login() {
     e.preventDefault();
     try {
       const res = await login(form);
+      console.log("LOGIN RESPONSE 👉", res.data);
       const userData = res.data.user || res.data;
      // const { user, token } = res.data;
       if (!userData?.username || !userData?.role) {
