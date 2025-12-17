@@ -46,13 +46,25 @@ function Dashboard() {
   };
 
   const handleBook = async (e) => {
-    e.preventDefault();
-    await bookAppointment({ doctorId: selectedDoctorId, date, time });
+  e.preventDefault();
+  if (!doctor || !date) {
+    alert("Please select doctor and date");
+    return;
+  }
+  try {
+    await bookAppointment({
+      doctorId: doctor,
+      date: date
+    });
     alert('Appointment booked');
     fetchPatientAppointments(username);
     setDoctor('');
     setDate('');
-  };
+  } catch (err) {
+    alert("Booking failed");
+    console.error(err);
+  }
+};
 
   const handleCancel = async (id) => {
     try {
@@ -87,7 +99,7 @@ function Dashboard() {
             <option value="">Select Doctor</option>
             {doctors
               .map(doc => (
-                <option key={doc._id} value={doc.username}>{doc.name}</option>
+                <option key={doc._id} value={doc._id}>{doc.name}</option>
               ))}
 
           </select>
