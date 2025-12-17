@@ -13,8 +13,12 @@ function Login() {
     e.preventDefault();
     try {
       const res = await login(form);
-      const user = res.data.user;
+      const user = res.data.user || res.data;
      // const { user, token } = res.data;
+      if (!userData?.username || !userData?.role) {
+        alert("Login data missing");
+        return;
+      }
       localStorage.setItem('username', res.data.user.username);
       localStorage.setItem('name', res.data.user.name);
       localStorage.setItem('role', res.data.user.role);
@@ -28,10 +32,6 @@ function Login() {
         navigate('/admin');
       } else {
         navigate('/dashboard');
-      }
-      if (!user || !user.username) {
-            alert("Invalid login response");
-           return;
       }
     } catch (err) {
       alert("Login failed");
