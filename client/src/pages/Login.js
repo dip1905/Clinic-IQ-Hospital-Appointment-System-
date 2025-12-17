@@ -19,9 +19,9 @@ function Login() {
         alert("Login data missing");
         return;
       }
-      localStorage.setItem('username', res.data.userData.username);
-      localStorage.setItem('name', res.data.userData.name);
-      localStorage.setItem('role', res.data.userData.role);
+      localStorage.setItem('username', userData.username);
+      localStorage.setItem('name', userData.name || '');
+      localStorage.setItem('role', userData.role);
       
       // if (res.data.token) {
       //   localStorage.setItem('token', token);
