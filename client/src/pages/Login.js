@@ -13,7 +13,7 @@ function Login() {
     e.preventDefault();
     try {
       const res = await login(form);
-      const user = res.data.user || res.data;
+      const userData = res.data.user || res.data;
      // const { user, token } = res.data;
       if (!userData?.username || !userData?.role) {
         alert("Login data missing");
