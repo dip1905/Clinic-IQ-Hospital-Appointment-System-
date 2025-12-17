@@ -15,7 +15,8 @@ dotenv.config();
 connectDB();
 const app = express();
 app.use(cors({
-  origin: 'https://clinic-iq-hospital-appointment-system.onrender.com',
+  // origin: 'https://clinic-iq-hospital-appointment-system.onrender.com',
+  origin: 'https://cliniciqhms.netlify.app',
   credentials: true
 }));
 // app.use(cors({
