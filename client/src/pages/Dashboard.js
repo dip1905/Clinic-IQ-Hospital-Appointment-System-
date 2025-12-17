@@ -17,7 +17,7 @@ function Dashboard() {
   const [doctor, setDoctor] = useState('');
   const [date, setDate] = useState('');
 
-  const name = localStorage.getItem('name');
+  // const name = localStorage.getItem('name');
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
 
