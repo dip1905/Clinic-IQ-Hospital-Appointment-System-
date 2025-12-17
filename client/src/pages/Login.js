@@ -29,6 +29,10 @@ function Login() {
       } else {
         navigate('/dashboard');
       }
+      if (!user || !user.username) {
+            alert("Invalid login response");
+           return;
+      }
     } catch (err) {
       alert("Login failed");
     }
