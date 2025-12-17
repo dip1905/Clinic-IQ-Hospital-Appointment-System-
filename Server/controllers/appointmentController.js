@@ -10,10 +10,10 @@ const createAppointment = async (req, res) => {
       time,
       status: "pending"
     });
-
+const saved = await appointment.save();
     res.status(201).json({
       message: "Appointment booked successfully",
-      appointment
+      saved
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
