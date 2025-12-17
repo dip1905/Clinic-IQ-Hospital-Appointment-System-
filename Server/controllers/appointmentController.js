@@ -2,15 +2,19 @@ const Appointment = require('../models/Appointment');
 
 const createAppointment = async (req, res) => {
   try {
-    const { doctorId, date, time } = req.body;
-    const appointment = await Appointment.create({
-      patient: req.user.id,
-      doctor: doctorId,     
-      date,
-      time,
-      status: "pending"
-    });
-const saved = await appointment.save();
+    const { doctorId, date } = req.body;
+
+if (!doctorId || !date) {
+  return res.status(400).json({ message: "Doctor and date are required" });
+}
+
+const appointment = await Appointment.create({
+  patient: req.user.id,
+  doctor: doctorId,
+  date: new Date(date),
+  status: "booked"
+});
+    
     res.status(201).json({
       message: "Appointment booked successfully",
       saved
