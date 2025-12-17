@@ -17,7 +17,7 @@ const appointment = await Appointment.create({
     
     res.status(201).json({
       message: "Appointment booked successfully",
-      saved
+      appointment
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
