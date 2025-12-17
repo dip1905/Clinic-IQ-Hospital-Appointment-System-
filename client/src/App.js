@@ -18,7 +18,6 @@ function App() {
     localStorage.clear();
   }
 }, []);
-  const isLoggedIn = !!localStorage.getItem('token');
 
   return (
     <Router>
@@ -28,7 +27,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/dashboard" element={ <Dashboard /> } />
 
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ManageUsers />} />
