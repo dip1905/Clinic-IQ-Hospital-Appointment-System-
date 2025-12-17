@@ -23,9 +23,12 @@ const saved = await appointment.save();
 
 const getAppointmentsForDoctor = async (req, res) => {
   try {
-    const { doctor } = req.params;
-    const appointments = await Appointment.find({ doctor:req.user.id }).populate("patient", "name email")
-    .sort({ createdAt: -1 });;
+    const appointments = await Appointment.find({
+      doctor: req.user.id
+    })
+      .populate("patient", "name email username")
+      .sort({ createdAt: -1 });
+
     res.json(appointments);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -34,8 +37,12 @@ const getAppointmentsForDoctor = async (req, res) => {
 
 const getAppointmentsForUser = async (req, res) => {
   try {
-    const { username } = req.params;
-    const appointments = await Appointment.find({ patient: username });
+    const appointments = await Appointment.find({
+      patient: req.user.id
+    })
+      .populate("doctor", "name username")
+      .sort({ createdAt: -1 });
+
     res.json(appointments);
   } catch (err) {
     res.status(500).json({ error: err.message });
