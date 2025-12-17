@@ -11,7 +11,6 @@ const appointmentSchema = new mongoose.Schema({
     ref: "User",       
     required: true
   },
-  const mongoose = require("mongoose");
 
 const appointmentSchema = new mongoose.Schema({
   patient: {
