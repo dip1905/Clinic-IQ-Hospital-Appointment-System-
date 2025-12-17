@@ -53,8 +53,9 @@ function Dashboard() {
   }
   try {
     await bookAppointment({
-      doctorId: doctor,
-      date: date
+      patient: username,
+      doctor,
+      date
     });
     alert('Appointment booked');
     fetchPatientAppointments(username);
@@ -99,7 +100,7 @@ function Dashboard() {
             <option value="">Select Doctor</option>
             {doctors
               .map(doc => (
-                <option key={doc._id} value={doc._id}>{doc.name}</option>
+                <option key={doc._id} value={doc.username}>{doc.name}</option>
               ))}
 
           </select>
@@ -112,7 +113,7 @@ function Dashboard() {
         <h3>{role === 'doctor' ? 'My Patients' : 'My Appointments'}</h3>
         {appointments.map((appt) => (
           <div key={appt._id} className="appointment-card">
-            <p><strong>{role === 'doctor' ? 'Patient' : 'Doctor'}:</strong> {role === 'doctor' ? appt.patient?.name : appt.doctor?.name}</p>
+            <p><strong>{role === 'doctor' ? 'Patient' : 'Doctor'}:</strong> {role === 'doctor' ? appt.patient : appt.doctor}</p>
             <p><strong>Date:</strong> {new Date(appt.date).toLocaleString()}</p>
             <p><strong>Status:</strong> {appt.status}</p>
 
