@@ -12,12 +12,17 @@ const Appointment = require('../models/Appointment');
 
 const createAppointment = async (req, res) => {
   try {
-    const { patient, doctor, date } = req.body;
+    const { patient, doctor, date, time } = req.body;
 
-    if (!patient || !doctor || !date) {
+    if (!patient || !doctor || !date || !time) {
       return res.status(400).json({
         message: 'patient, doctor and date are required'
       });
+    }
+     const patientExists = await User.findOne({ username: patient });
+    const doctorExists = await User.findOne({ username: doctor });
+    if (!patientExists || !doctorExists) {
+      return res.status(400).json({ message: 'Invalid patient or doctor username' });
     }
 
     const newAppointment = new Appointment({
