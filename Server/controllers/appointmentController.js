@@ -19,11 +19,6 @@ const createAppointment = async (req, res) => {
         message: 'patient, doctor and date are required'
       });
     }
-     const patientExists = await User.findOne({ username: patient });
-    const doctorExists = await User.findOne({ username: doctor });
-    if (!patientExists || !doctorExists) {
-      return res.status(400).json({ message: 'Invalid patient or doctor username' });
-    }
 
     const newAppointment = new Appointment({
       patient,
