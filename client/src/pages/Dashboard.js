@@ -5,7 +5,7 @@ import {
   bookAppointment,
   cancelAppointment,
   getDoctors,
-
+  markCompleted
 } from '../services/api';
 import axios from 'axios';
 import '../css/Dashboard.css';
@@ -90,16 +90,16 @@ function Dashboard() {
     }
   };
   const handleComplete = async (id) => {
-    try {
-      await axios.patch(`https://cliniciq-hospital-appointment-system.onrender.com/api/appointments/complete/${id}`, {}, { withCredentials: true });
-      alert("Marked as completed");
-      if (role === 'doctor') fetchDoctorAppointments(username);
-      else fetchPatientAppointments(username);
-    } catch (error) {
-      alert("Failed to mark completed");
-      console.error(error);
-    }
-  };
+  try {
+    await markCompleted(id);
+    alert("Marked as completed");
+    role === 'doctor'
+      ? fetchDoctorAppointments(username)
+      : fetchPatientAppointments(username);
+  } catch (error) {
+    alert("Failed to mark completed");
+  }
+};
 
 
   return (
