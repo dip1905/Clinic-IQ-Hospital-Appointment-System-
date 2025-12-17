@@ -16,7 +16,7 @@ function App() {
 useEffect(() => {
   const token = localStorage.getItem("token");
   if (token) {
-    setIsLoggedIn(true);
+    setIsLoggedIn(!!token);
   }
 }, []);
 
@@ -26,7 +26,7 @@ useEffect(() => {
       <Navbar />
       <div style={{ marginTop: '150px' }}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={isLoggedIn ? <Navigate to="/dashboard" /> : <Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
