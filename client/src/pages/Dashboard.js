@@ -20,6 +20,9 @@ function Dashboard() {
   const name = localStorage.getItem('name');
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('role');
+  if (!username || !role) {
+    return <p>Loading...</p>;
+  }
 
   // useEffect(() => {
   //   if (role === 'doctor') fetchDoctorAppointments(username);
