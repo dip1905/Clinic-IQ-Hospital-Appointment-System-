@@ -22,13 +22,8 @@ const appointmentSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['booked', 'cancelled', 'completed'],
-    default: "pending"
+    default: "booked"
   }
 });
 
 module.exports = mongoose.model("Appointment", appointmentSchema);
-    default: 'booked'
-  }
-});
-
-module.exports = mongoose.model('Appointment', appointmentSchema);
