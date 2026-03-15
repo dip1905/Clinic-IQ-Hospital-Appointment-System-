@@ -26,20 +26,36 @@ function Navbar() {
       </div>
 
       <div className="nav-right">
-        {!name ? (
+        {!name && (
           <>
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/register" className="nav-link">Register</Link>
             <Link to="/login" className="nav-link">Login</Link>
-            {role === 'admin' && (
-              <Link to="/admin" className="nav-link">Admin Panel</Link>
-            )}
-
           </>
-        ) : (
+        )}
+
+        {name && role === 'admin' && (
           <>
-            <span className="nav-user">Welcome, {name} ({role})</span>
-            <button className="nav-link" onClick={handleLogout}>Logout</button>
+            <Link to="/admin" className="nav-link">Admin Panel</Link>
+            <Link to="/admin/users/patients" className="nav-link">
+              Manage Patients
+            </Link>
+            <Link to="/admin/users/doctors" className="nav-link">
+              Manage Doctors
+            </Link>
+            <Link to="/admin/appointments" className="nav-link">
+              Appointments
+            </Link>
+          </>
+        )}
+        {name && (
+          <>
+            <span className="nav-user">
+              Welcome, {name} ({role})
+            </span>
+            <button className="nav-link" onClick={handleLogout}>
+              Logout
+            </button>
           </>
         )}
       </div>

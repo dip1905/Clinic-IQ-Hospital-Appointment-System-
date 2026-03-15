@@ -1,12 +1,21 @@
 const User = require('../models/User');
 const Appointment = require('../models/Appointment');
 
-exports.getAllUsers = async (req, res) => {
+exports.getAllPatients = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
-    res.json(users);
+    const patient = await User.find({role:'patient'}).select('-password');
+    res.json(patient);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getAllDoctors = async (req, res)=>{
+  try{
+    const doctors = await User.find({role:'doctor'}).select('-password')
+  res.json(doctors);
+  }catch(err){
+    res.status(500).json({error:err.message})
   }
 };
 

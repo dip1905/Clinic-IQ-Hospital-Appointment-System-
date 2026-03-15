@@ -3,8 +3,6 @@ const Doctor = require('../models/Doctor');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 exports.register = async (req, res) => {
   try {
     const {
@@ -45,17 +43,18 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).select('+password');
+    console.log("User found:", user);
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
+    console.log("User status - isApproved:", user.isApproved, "isBlocked:", user.isBlocked);
     if (user.isBlocked) {
       return res.status(403).json({ message: 'User is blocked by admin' });
     }
@@ -63,12 +62,13 @@ exports.login = async (req, res) => {
     if (user.role === 'doctor' && !user.isApproved) {
       return res.status(403).json({ message: 'Doctor not approved yet' });
     }
-
+    console.log("Generating token for user:", user.username);
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
+    console.log("Token generated:", token);
 
     res
       .cookie('token', token, {
@@ -84,9 +84,11 @@ exports.login = async (req, res) => {
           name: user.name
         }
       });
+    console.log("Login successful for user:", user.username);
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+    console.error("Login error:", err);
   }
 };
 

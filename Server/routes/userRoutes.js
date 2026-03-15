@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUsersByRole } = require('../controllers/userController');
+const { getUsersByRole,searchUser } = require('../controllers/userController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const router = express.Router();
 

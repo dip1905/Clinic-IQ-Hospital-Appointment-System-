@@ -7,8 +7,10 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import ManageUsers from './pages/admin/ManageUsers';
-import ManageAppointments from './pages/admin/ManageAppointments';
+import Patient from './pages/admin/Patient'
+import Doctor from './pages/admin/Doctors'
+// import ManageUsers from './pages/admin/ManageUsers';
+// import ManageAppointments from './pages/admin/ManageAppointments';
 
 function App() {
   return (
@@ -22,8 +24,10 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<ManageUsers />} />
-          <Route path="/admin/appointments" element={<ManageAppointments />} />
+          <Route path="/admin/users/patients" element={<Patient />} />
+          <Route path="/admin/users/doctors" element={<Doctor />} />
+          {/* <Route path="/admin/users" element={<ManageUsers />} />  */}
+          {/* <Route path="/admin/appointments" element={<ManageAppointments />} /> */}
 
         </Routes>
       </div>

@@ -2,7 +2,8 @@ const express = require('express');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
 const {
-  getAllUsers,
+  getAllPatients,
+  getAllDoctors,
   getAllAppointments,
   deleteAppointment,
   approveDoctor,
@@ -12,7 +13,8 @@ const {
 
 const router = express.Router();
 
-router.get('/admin/users', verifyToken, authorizeRoles('admin'), getAllUsers);
+router.get('/admin/users/patients', verifyToken, authorizeRoles('admin'), getAllPatients);
+router.get('/admin/users/doctors', verifyToken, authorizeRoles('admin'), getAllDoctors);
 router.get('/admin/appointments', verifyToken, authorizeRoles('admin'), getAllAppointments);
 router.delete('/admin/appointments/:id', verifyToken, authorizeRoles('admin'), deleteAppointment);
 router.patch('/admin/approve/:id', verifyToken, authorizeRoles('admin'), approveDoctor);
