@@ -1,128 +1,161 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../../css/Admin.css';
+
+const COLORS = [
+  { bg:'#E1F5EE', color:'#085041' },
+  { bg:'#EEEDFE', color:'#3C3489' },
+  { bg:'#FAEEDA', color:'#633806' },
+  { bg:'#E6F1FB', color:'#0C447C' },
+];
+
+function initials(name = '') {
+  return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
 
 function Doctor() {
-    const [doctor, setDoctor] = useState([]);
+  const [doctors,  setDoctors]  = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState('');
+  const [filter,   setFilter]   = useState('all');
 
-    const fetchDoctors = async () => {
-        try {
-            const res = await axios.get(
-                'http://localhost:5000/api/admin/doctors',
-                { withCredentials: true }
-            );
-            setDoctor(res.data);
-        } catch (err) {
-            alert('Access denied');
-        }
-    };
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('http://localhost:5000/api/admin/users/doctors', { withCredentials: true });
+      setDoctors(res.data);
+    } catch { alert('Access denied'); }
+    finally { setLoading(false); }
+  };
 
-    useEffect(() => {
-        fetchDoctors();
-    }, []);
+  useEffect(() => { fetchDoctors(); }, []);
 
-    const approveDoctor = async (id) => {
-        await axios.patch(
-            `http://localhost:5000/api/admin/approve/${id}`,
-            {},
-            { withCredentials: true }
-        );
-        fetchUsers();
-    };
+  const approveDoctor = async (id) => {
+    await axios.patch(`http://localhost:5000/api/admin/approve/${id}`, {}, { withCredentials: true });
+    fetchDoctors();
+  };
 
-    const blockUser = async (id) => {
-        await axios.patch(
-            `http://localhost:5000/api/admin/block/${id}`,
-            {},
-            { withCredentials: true }
-        );
-        fetchUsers();
-    };
+  const blockUser = async (id) => {
+    await axios.patch(`http://localhost:5000/api/admin/block/${id}`, {}, { withCredentials: true });
+    fetchDoctors();
+  };
 
-    const unblockUser = async (id) => {
-        await axios.patch(
-            `http://localhost:5000/api/admin/unblock/${id}`,
-            {},
-            { withCredentials: true }
-        );
-        fetchUsers();
-    };
+  const unblockUser = async (id) => {
+    await axios.patch(`http://localhost:5000/api/admin/unblock/${id}`, {}, { withCredentials: true });
+    fetchDoctors();
+  };
 
-    const deleteUser = async (id) => {
-        if (!window.confirm('Delete this user?')) return;
+  const deleteUser = async (id) => {
+    if (!window.confirm('Delete this doctor?')) return;
+    await axios.delete(`http://localhost:5000/api/admin/users/${id}`, { withCredentials: true });
+    fetchDoctors();
+  };
 
-        await axios.delete(
-            `http://localhost:5000/api/admin/users/${id}`,
-            { withCredentials: true }
-        );
-        fetchUsers();
-    };
-    return (
-        <div className='container'>
-            <h1>All Patients</h1>
-            <table className="table mt-3">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+  const getStatus = (d) => {
+    if (d.isBlocked)   return 'blocked';
+    if (!d.isApproved) return 'pending';
+    return 'active';
+  };
 
-                <tbody>
-                    {doctor.map((doc) => (
-                        <tr key={doc._id}>
-                            <td>{doc.name}</td>
-                            <td>{doc.username}</td>
-                            <td>{doc.role}</td>
+  const counts = {
+    all:     doctors.length,
+    active:  doctors.filter(d => !d.isBlocked && d.isApproved).length,
+    pending: doctors.filter(d => !d.isApproved && !d.isBlocked).length,
+    blocked: doctors.filter(d => d.isBlocked).length,
+  };
 
-                            <td>
-                                {doc.isBlocked && 'Blocked'}
-                                {!doc.isApproved && 'Pending'}
-                                {!doc.isBlocked && doc.isApproved && 'Active'}
-                            </td>
+  const filtered = doctors
+    .filter(d => filter === 'all' || getStatus(d) === filter)
+    .filter(d =>
+      d.name.toLowerCase().includes(search.toLowerCase()) ||
+      d.username.toLowerCase().includes(search.toLowerCase())
+    );
 
-                            <td>
-                                {!doc.isApproved && (
-                                    <button
-                                        className="btn btn-success btn-sm me-2"
-                                        onClick={() => approveDoctor(doc._id)}
-                                    >
-                                        Approve
-                                    </button>
-                                )}
+  return (
+    <div className="admin-page">
+      <div className="admin-page-title">Doctors</div>
+      <div className="admin-page-sub">{counts.active} active · {counts.pending} pending · {counts.blocked} blocked</div>
 
-                                {!doc.isBlocked ? (
-                                    <button
-                                        className="btn btn-warning btn-sm me-2"
-                                        onClick={() => blockUser(doc._id)}
-                                    >
-                                        Block
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="btn btn-info btn-sm me-2"
-                                        onClick={() => unblockUser(doc._id)}
-                                    >
-                                        Unblock
-                                    </button>
-                                )}
-
-                                <button
-                                    className="btn btn-danger btn-sm"
-                                    onClick={() => deleteUser(doc._id)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
+      <div className="admin-card">
+        <div className="admin-search-row">
+          <div className="admin-filter-tabs">
+            {['all','active','pending','blocked'].map(f => (
+              <button
+                key={f}
+                className={`admin-tab${filter === f ? ' active' : ''}`}
+                onClick={() => setFilter(f)}
+              >
+                {f} ({counts[f]})
+              </button>
+            ))}
+          </div>
+          <input
+            className="admin-search"
+            placeholder="Search..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
-    )
+
+        {loading ? (
+          <div className="admin-empty">Loading...</div>
+        ) : filtered.length === 0 ? (
+          <div className="admin-empty">No doctors found</div>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((doc, i) => {
+                  const c = COLORS[i % COLORS.length];
+                  const status = getStatus(doc);
+                  return (
+                    <tr key={doc._id}>
+                      <td>
+                        <div className="td-avatar">
+                          <div className="td-avatar-circle" style={{background:c.bg,color:c.color}}>
+                            {initials(doc.name)}
+                          </div>
+                          {doc.name}
+                        </div>
+                      </td>
+                      <td style={{color:'#666'}}>{doc.username}</td>
+                      <td style={{color:'#666'}}>{doc.email}</td>
+                      <td>
+                        <span className={`admin-badge ${status}`}>
+                          {status === 'active' ? 'Active' : status === 'pending' ? 'Pending' : 'Blocked'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{display:'flex',gap:6}}>
+                          {!doc.isApproved && !doc.isBlocked && (
+                            <button className="btn-approve" onClick={() => approveDoctor(doc._id)}>Approve</button>
+                          )}
+                          {!doc.isBlocked
+                            ? <button className="btn-warn-sm" onClick={() => blockUser(doc._id)}>Block</button>
+                            : <button className="btn-info-sm" onClick={() => unblockUser(doc._id)}>Unblock</button>
+                          }
+                          <button className="btn-danger-sm" onClick={() => deleteUser(doc._id)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default Doctor;

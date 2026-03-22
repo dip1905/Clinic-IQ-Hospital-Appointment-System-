@@ -1,103 +1,125 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../../css/Admin.css';
+
+const COLORS = [
+  { bg:'#E6F1FB', color:'#0C447C' },
+  { bg:'#EEEDFE', color:'#3C3489' },
+  { bg:'#E1F5EE', color:'#085041' },
+  { bg:'#FAEEDA', color:'#633806' },
+];
+
+function initials(name = '') {
+  return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
 
 function Patient() {
-  const [patient, setPatient] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [search,   setSearch]   = useState('');
 
-  const fetchPatients = () => {
-    axios
-      .get('http://localhost:5000/api/admin/users/patients', { withCredentials: true })
-      .then(res => setPatient(res.data))
-      .catch(() => alert('Access denied'));
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('http://localhost:5000/api/admin/users/patients', { withCredentials: true });
+      setPatients(res.data);
+    } catch { alert('Access denied'); }
+    finally { setLoading(false); }
   };
 
-  useEffect(fetchPatients, []);
+  useEffect(() => { fetchPatients(); }, []);
 
   const blockUser = async (id) => {
-    await axios.patch(
-      `http://localhost:5000/api/admin/block/${id}`,
-      {},
-      { withCredentials: true }
-    );
-    fetchUsers();
+    await axios.patch(`http://localhost:5000/api/admin/block/${id}`, {}, { withCredentials: true });
+    fetchPatients();
   };
 
   const unblockUser = async (id) => {
-    await axios.patch(
-      `http://localhost:5000/api/admin/unblock/${id}`,
-      {},
-      { withCredentials: true }
-    );
-    fetchUsers();
+    await axios.patch(`http://localhost:5000/api/admin/unblock/${id}`, {}, { withCredentials: true });
+    fetchPatients();
   };
 
   const deleteUser = async (id) => {
-    if (!window.confirm('Delete this user?')) return;
-
-    await axios.delete(
-      `http://localhost:5000/api/admin/users/${id}`,
-      { withCredentials: true }
-    );
-    fetchUsers();
+    if (!window.confirm('Delete this patient? This cannot be undone.')) return;
+    await axios.delete(`http://localhost:5000/api/admin/users/${id}`, { withCredentials: true });
+    fetchPatients();
   };
 
+  const filtered = patients.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
+    p.username.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className='container'>
-      <h1>All Patients</h1>
-      <table className="table mt-3">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+    <div className="admin-page">
+      <div className="admin-page-title">Patients</div>
+      <div className="admin-page-sub">{patients.length} registered patients</div>
 
-        <tbody>
-          {patient.map((user) => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.username}</td>
-              <td>{user.role}</td>
+      <div className="admin-card">
+        <div className="admin-search-row">
+          <input
+            className="admin-search"
+            placeholder="Search by name or username..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
 
-              <td>
-                {user.isBlocked && 'Blocked'}
-                {!user.isBlocked && (user.role !== 'doctor' || user.isApproved) && 'Active'}
-              </td>
-
-              <td>
-                {!user.isBlocked ? (
-                  <button
-                    className="btn btn-warning btn-sm me-2"
-                    onClick={() => blockUser(user._id)}
-                  >
-                    Block
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-info btn-sm me-2"
-                    onClick={() => unblockUser(user._id)}
-                  >
-                    Unblock
-                  </button>
-                )}
-
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => deleteUser(user._id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
+        {loading ? (
+          <div className="admin-empty">Loading...</div>
+        ) : filtered.length === 0 ? (
+          <div className="admin-empty">No patients found</div>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((user, i) => {
+                  const c = COLORS[i % COLORS.length];
+                  return (
+                    <tr key={user._id}>
+                      <td>
+                        <div className="td-avatar">
+                          <div className="td-avatar-circle" style={{background:c.bg,color:c.color}}>
+                            {initials(user.name)}
+                          </div>
+                          {user.name}
+                        </div>
+                      </td>
+                      <td style={{color:'#666'}}>{user.username}</td>
+                      <td style={{color:'#666'}}>{user.email}</td>
+                      <td>
+                        <span className={`admin-badge ${user.isBlocked ? 'blocked' : 'active'}`}>
+                          {user.isBlocked ? 'Blocked' : 'Active'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{display:'flex',gap:6}}>
+                          {!user.isBlocked
+                            ? <button className="btn-warn-sm" onClick={() => blockUser(user._id)}>Block</button>
+                            : <button className="btn-info-sm" onClick={() => unblockUser(user._id)}>Unblock</button>
+                          }
+                          <button className="btn-danger-sm" onClick={() => deleteUser(user._id)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
-  )
+  );
 }
 
 export default Patient;

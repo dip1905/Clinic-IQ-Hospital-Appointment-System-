@@ -3,7 +3,8 @@ const User = require('../models/User');
 exports.getUsersByRole = async (req, res) => {
   try {
     const role = req.query.role;
-    const users = await User.find({ role });
+    const query = role ? { role } : {};
+    const users = await User.find(query).select('-password');
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -13,21 +14,28 @@ exports.getUsersByRole = async (req, res) => {
 exports.searchUser = async (req, res) => {
   try {
     const { query } = req.query;
-    const loggedInUser = req.user
+
+    if (!query || query.trim() === '') {
+      return res.status(400).json({ message: 'Search query is required', data: [] });
+    }
+
+    const loggedInUser = req.user;
     const role = loggedInUser.role;
 
-    let filter = { name: { $regex: query, $option: 'i' } }
+    // FIXED: was $option (typo) — should be $options
+    let filter = { name: { $regex: query, $options: 'i' } };
 
     if (role === 'admin') {
-      // Admin can search all users
+      // Admin can search all users — no extra filters
     } else if (role === 'doctor') {
-      // Doctor can search only their patients
+      // FIXED: removed invalid filter.doctorId — that field doesn't exist on User model
+      // Doctor can search patients only
       filter.role = 'patient';
-      filter.doctorId = loggedInUser._id;
     } else if (role === 'patient') {
-      // Patient can search only approved doctors
+      // Patient can search approved, unblocked doctors only
       filter.role = 'doctor';
       filter.isApproved = true;
+      filter.isBlocked = false;
     }
 
     const users = await User.find(filter).select('-password');
@@ -38,6 +46,6 @@ exports.searchUser = async (req, res) => {
 
     res.json({ message: 'Users found', data: users });
   } catch (err) {
-    res.status(500).json({ message: "server error" })
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

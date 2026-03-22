@@ -14,48 +14,56 @@ function Navbar() {
     navigate('/login');
   };
 
+  const navClass = role === 'doctor'
+    ? 'navbar role-doctor'
+    : role === 'admin'
+    ? 'navbar role-admin'
+    : 'navbar';
+
   return (
-    <nav className="navbar">
+    <nav className={navClass}>
       <div className="nav-left">
-        <Link to="/" >
-          <div className="nav-logo">
-            <img src="/logo1.png" alt="ClinicIQ" className='img' />
-          </div>
-          <h1>ClinicIQ</h1>
+        <Link to={name ? (role === 'admin' ? '/admin' : '/dashboard') : '/'}>
+          <div className="nav-logo-circle">CQ</div>
+          <span className="nav-brand-name">ClinicIQ</span>
+          {role && (
+            <span className="nav-portal-badge">
+              {role === 'patient' ? 'Patient' : role === 'doctor' ? 'Doctor' : 'Admin'}
+            </span>
+          )}
         </Link>
       </div>
 
       <div className="nav-right">
         {!name && (
           <>
-            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/"         className="nav-link">Home</Link>
             <Link to="/register" className="nav-link">Register</Link>
-            <Link to="/login" className="nav-link">Login</Link>
+            <Link to="/login"    className="nav-link">Login</Link>
           </>
+        )}
+
+        {name && role === 'patient' && (
+          <Link to="/dashboard" className="nav-link">My appointments</Link>
+        )}
+
+        {name && role === 'doctor' && (
+          <Link to="/dashboard" className="nav-link">My patients</Link>
         )}
 
         {name && role === 'admin' && (
           <>
-            <Link to="/admin" className="nav-link">Admin Panel</Link>
-            <Link to="/admin/users/patients" className="nav-link">
-              Manage Patients
-            </Link>
-            <Link to="/admin/users/doctors" className="nav-link">
-              Manage Doctors
-            </Link>
-            <Link to="/admin/appointments" className="nav-link">
-              Appointments
-            </Link>
+            <Link to="/admin"                className="nav-link">Dashboard</Link>
+            <Link to="/admin/users/patients" className="nav-link">Patients</Link>
+            <Link to="/admin/users/doctors"  className="nav-link">Doctors</Link>
+            <Link to="/admin/appointments"   className="nav-link">Appointments</Link>
           </>
         )}
+
         {name && (
           <>
-            <span className="nav-user">
-              Welcome, {name} ({role})
-            </span>
-            <button className="nav-link" onClick={handleLogout}>
-              Logout
-            </button>
+            <span className="nav-user-pill">{name}</span>
+            <button className="nav-logout-btn" onClick={handleLogout}>Logout</button>
           </>
         )}
       </div>

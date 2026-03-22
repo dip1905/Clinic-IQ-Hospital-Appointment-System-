@@ -10,6 +10,14 @@ exports.register = async (req, res) => {
       specialization, qualification, experience, consultationFee
     } = req.body;
 
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return res.status(409).json({ message: 'Email already registered' });
+      }
+      return res.status(409).json({ message: 'Username already taken' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -20,7 +28,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       role,
       isApproved: role === 'doctor' ? false : true,
-      isBlocked: false
+      isBlocked: false,
     });
 
     if (role === 'doctor') {
@@ -29,71 +37,62 @@ exports.register = async (req, res) => {
         specialization,
         qualification,
         experience,
-        consultationFee
+        consultationFee,
       });
     }
 
     res.status(201).json({ message: 'Registered successfully' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: 'Registration failed', error: err.message });
   }
 };
-
 
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username }).select('+password');
-    console.log("User found:", user);
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
+
+    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match:", isMatch);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    console.log("User status - isApproved:", user.isApproved, "isBlocked:", user.isBlocked);
-    if (user.isBlocked) {
-      return res.status(403).json({ message: 'User is blocked by admin' });
-    }
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+    if (user.isBlocked) return res.status(403).json({ message: 'User is blocked by admin' });
 
     if (user.role === 'doctor' && !user.isApproved) {
       return res.status(403).json({ message: 'Doctor not approved yet' });
     }
-    console.log("Generating token for user:", user.username);
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );
-    console.log("Token generated:", token);
 
     res
       .cookie('token', token, {
         httpOnly: true,
         sameSite: 'strict',
-        secure: false
+        secure: process.env.NODE_ENV === 'production',
       })
       .json({
         token,
         user: {
           username: user.username,
           role: user.role,
-          name: user.name
-        }
+          name: user.name,
+        },
       });
-    console.log("Login successful for user:", user.username);
-
   } catch (err) {
-    res.status(500).json({ error: err.message });
-    console.error("Login error:", err);
+    res.status(500).json({ message: 'Login failed', error: err.message });
   }
 };
 
-
 exports.logout = (req, res) => {
-  res.clearCookie('token');
-  res.json({ message: 'Logged out' });
+  try {
+    res.clearCookie('token');
+    res.json({ message: 'Logged out' });
+  } catch (err) {
+    res.status(500).json({ message: 'Logout failed', error: err.message });
+  }
 };

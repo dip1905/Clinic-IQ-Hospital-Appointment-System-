@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { searchUsers } from '../services/api';
 
-function SearchUsers({ role }) {
+function SearchUsers() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [message, setMessage] = useState('');
 
   const handleSearch = async () => {
-    if (!query) {
+    if (!query.trim()) {
       setMessage('Please enter a search term');
       setResults([]);
       return;
     }
 
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/search?query=${query}`, {
-        withCredentials: true
-      });
-
+      const res = await searchUsers(query);
       if (res.data.data.length === 0) {
         setMessage('No users found');
         setResults([]);
@@ -26,7 +23,6 @@ function SearchUsers({ role }) {
         setMessage('');
       }
     } catch (err) {
-      console.error(err);
       setMessage('Access denied or server error');
       setResults([]);
     }
@@ -42,13 +38,14 @@ function SearchUsers({ role }) {
           className="form-control"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
         <button className="btn btn-primary" onClick={handleSearch}>
           Search
         </button>
       </div>
 
-      {message && <p>{message}</p>}
+      {message && <p className="text-muted">{message}</p>}
 
       {results.length > 0 && (
         <table className="table">
@@ -67,8 +64,11 @@ function SearchUsers({ role }) {
                 <td>{user.username}</td>
                 <td>{user.role}</td>
                 <td>
-                  {user.isBlocked ? 'Blocked' :
-                   user.role === 'doctor' && !user.isApproved ? 'Pending' : 'Active'}
+                  {user.isBlocked
+                    ? 'Blocked'
+                    : user.role === 'doctor' && !user.isApproved
+                    ? 'Pending'
+                    : 'Active'}
                 </td>
               </tr>
             ))}
