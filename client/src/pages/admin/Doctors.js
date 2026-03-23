@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import {
+  adminGetDoctors,
+  adminApproveDoctor,
+  adminBlockUser,
+  adminUnblockUser,
+  adminDeleteUser,
+} from '../../services/api';
 import '../../css/Admin.css';
 
 const COLORS = [
@@ -10,44 +16,47 @@ const COLORS = [
 ];
 
 function initials(name = '') {
-  return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
 function Doctor() {
-  const [doctors,  setDoctors]  = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [search,   setSearch]   = useState('');
-  const [filter,   setFilter]   = useState('all');
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search,  setSearch]  = useState('');
+  const [filter,  setFilter]  = useState('all');
 
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/users/doctors', { withCredentials: true });
+      const res = await adminGetDoctors();
       setDoctors(res.data);
-    } catch { alert('Access denied'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      alert('Access denied');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchDoctors(); }, []);
 
   const approveDoctor = async (id) => {
-    await axios.patch(`http://localhost:5000/api/admin/approve/${id}`, {}, { withCredentials: true });
+    await adminApproveDoctor(id);
     fetchDoctors();
   };
 
   const blockUser = async (id) => {
-    await axios.patch(`http://localhost:5000/api/admin/block/${id}`, {}, { withCredentials: true });
+    await adminBlockUser(id);
     fetchDoctors();
   };
 
   const unblockUser = async (id) => {
-    await axios.patch(`http://localhost:5000/api/admin/unblock/${id}`, {}, { withCredentials: true });
+    await adminUnblockUser(id);
     fetchDoctors();
   };
 
   const deleteUser = async (id) => {
     if (!window.confirm('Delete this doctor?')) return;
-    await axios.delete(`http://localhost:5000/api/admin/users/${id}`, { withCredentials: true });
+    await adminDeleteUser(id);
     fetchDoctors();
   };
 
@@ -74,7 +83,9 @@ function Doctor() {
   return (
     <div className="admin-page">
       <div className="admin-page-title">Doctors</div>
-      <div className="admin-page-sub">{counts.active} active · {counts.pending} pending · {counts.blocked} blocked</div>
+      <div className="admin-page-sub">
+        {counts.active} active · {counts.pending} pending · {counts.blocked} blocked
+      </div>
 
       <div className="admin-card">
         <div className="admin-search-row">
@@ -121,7 +132,7 @@ function Doctor() {
                     <tr key={doc._id}>
                       <td>
                         <div className="td-avatar">
-                          <div className="td-avatar-circle" style={{background:c.bg,color:c.color}}>
+                          <div className="td-avatar-circle" style={{background:c.bg, color:c.color}}>
                             {initials(doc.name)}
                           </div>
                           {doc.name}
@@ -135,7 +146,7 @@ function Doctor() {
                         </span>
                       </td>
                       <td>
-                        <div style={{display:'flex',gap:6}}>
+                        <div style={{display:'flex', gap:6}}>
                           {!doc.isApproved && !doc.isBlocked && (
                             <button className="btn-approve" onClick={() => approveDoctor(doc._id)}>Approve</button>
                           )}
