@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import {
+  adminGetPatients,
+  adminBlockUser,
+  adminUnblockUser,
+  adminDeleteUser,
+} from '../../services/api';
 import '../../css/Admin.css';
 
 const COLORS = [
@@ -10,7 +15,7 @@ const COLORS = [
 ];
 
 function initials(name = '') {
-  return name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
 function Patient() {
@@ -21,27 +26,30 @@ function Patient() {
   const fetchPatients = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/users/patients', { withCredentials: true });
+      const res = await adminGetPatients();
       setPatients(res.data);
-    } catch { alert('Access denied'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      alert('Access denied');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchPatients(); }, []);
 
   const blockUser = async (id) => {
-    await axios.patch(`http://localhost:5000/api/admin/block/${id}`, {}, { withCredentials: true });
+    await adminBlockUser(id);
     fetchPatients();
   };
 
   const unblockUser = async (id) => {
-    await axios.patch(`http://localhost:5000/api/admin/unblock/${id}`, {}, { withCredentials: true });
+    await adminUnblockUser(id);
     fetchPatients();
   };
 
   const deleteUser = async (id) => {
     if (!window.confirm('Delete this patient? This cannot be undone.')) return;
-    await axios.delete(`http://localhost:5000/api/admin/users/${id}`, { withCredentials: true });
+    await adminDeleteUser(id);
     fetchPatients();
   };
 
@@ -88,7 +96,7 @@ function Patient() {
                     <tr key={user._id}>
                       <td>
                         <div className="td-avatar">
-                          <div className="td-avatar-circle" style={{background:c.bg,color:c.color}}>
+                          <div className="td-avatar-circle" style={{background:c.bg, color:c.color}}>
                             {initials(user.name)}
                           </div>
                           {user.name}
@@ -102,7 +110,7 @@ function Patient() {
                         </span>
                       </td>
                       <td>
-                        <div style={{display:'flex',gap:6}}>
+                        <div style={{display:'flex', gap:6}}>
                           {!user.isBlocked
                             ? <button className="btn-warn-sm" onClick={() => blockUser(user._id)}>Block</button>
                             : <button className="btn-info-sm" onClick={() => unblockUser(user._id)}>Unblock</button>
