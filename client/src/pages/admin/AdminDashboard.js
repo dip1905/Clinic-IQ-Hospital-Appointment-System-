@@ -6,7 +6,7 @@ import {
   adminGetAppointments,
   adminApproveDoctor,
 } from '../../services/api';
-import '../css/Admin.css';
+import '../../css/Admin.css';
 
 function AdminDashboard() {
   const navigate = useNavigate();
