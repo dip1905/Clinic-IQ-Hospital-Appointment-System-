@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import '../../css/Admin.css';
+import {
+  adminGetPatients,
+  adminGetDoctors,
+  adminGetAppointments,
+  adminApproveDoctor,
+} from '../../services/api';
+import '../css/Admin.css';
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -18,9 +23,9 @@ function AdminDashboard() {
   const fetchAll = async () => {
     try {
       const [pRes, dRes, aRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/users/patients',  { withCredentials: true }),
-        axios.get('http://localhost:5000/api/admin/users/doctors',   { withCredentials: true }),
-        axios.get('http://localhost:5000/api/admin/appointments',    { withCredentials: true }),
+        adminGetPatients(),
+        adminGetDoctors(),
+        adminGetAppointments(),
       ]);
       setStats({
         patients:     pRes.data.length,
@@ -30,15 +35,15 @@ function AdminDashboard() {
       });
       setPending(dRes.data.filter(d => !d.isApproved && !d.isBlocked).slice(0, 4));
       setRecent(aRes.data.slice(0, 4));
-    } catch {
-      console.error('Failed to load dashboard stats');
+    } catch (err) {
+      console.error('Failed to load dashboard stats', err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleApprove = async (id) => {
-    await axios.patch(`http://localhost:5000/api/admin/approve/${id}`, {}, { withCredentials: true });
+    await adminApproveDoctor(id);
     fetchAll();
   };
 
