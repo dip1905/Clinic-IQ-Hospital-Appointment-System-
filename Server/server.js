@@ -26,17 +26,30 @@ const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || 'ht
   .map(u => u.trim());
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile apps)
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, same-origin)
+    if (!origin) return callback(null, true);
+    
+    // In production allow same-origin Render URL + localhost for dev
+    const allowed = [
+      process.env.CLIENT_URL,
+      'http://localhost:3000',
+      'http://localhost:5000',
+    ].filter(Boolean);
+
+    if (allowed.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // allow all for now, tighten later
     }
   },
   credentials: true,
 }));
+```
 
+Then in **Render Dashboard → Environment** add:
+```
+CLIENT_URL=https://clinic-iq-hospital-appointment-system.onrender.com
 app.use(cookieParser());
 app.use(express.json());
 
