@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import {
+  adminGetAppointments,
+  adminDeleteAppointment,
+} from '../../services/api';
 import '../../css/Admin.css';
 
 function ManageAppointments() {
@@ -11,17 +14,20 @@ function ManageAppointments() {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/admin/appointments', { withCredentials: true });
+      const res = await adminGetAppointments();
       setAppointments(res.data);
-    } catch { alert('Access denied'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      alert('Access denied');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchAppointments(); }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this appointment?')) return;
-    await axios.delete(`http://localhost:5000/api/admin/appointments/${id}`, { withCredentials: true });
+    await adminDeleteAppointment(id);
     fetchAppointments();
   };
 
@@ -41,8 +47,6 @@ function ManageAppointments() {
         (a.doctor?.name  || '').toLowerCase().includes(q)
       );
     });
-
-  const badgeClass = (status) => `admin-badge ${status}`;
 
   return (
     <div className="admin-page">
@@ -93,11 +97,11 @@ function ManageAppointments() {
                   <tr key={a._id}>
                     <td>{a.patient?.name || '—'}</td>
                     <td>{a.doctor?.name  || '—'}</td>
-                    <td style={{color:'#666',whiteSpace:'nowrap'}}>
+                    <td style={{color:'#666', whiteSpace:'nowrap'}}>
                       {new Date(a.date).toLocaleString()}
                     </td>
                     <td>
-                      <span className={badgeClass(a.status)}>{a.status}</span>
+                      <span className={`admin-badge ${a.status}`}>{a.status}</span>
                     </td>
                     <td>
                       <button className="btn-danger-sm" onClick={() => handleDelete(a._id)}>Delete</button>
